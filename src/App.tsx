@@ -11,6 +11,9 @@ import {
 import { useState } from "react";
 import { Input } from "./components/ui/input";
 import { Card } from "./components/ui/card";
+import useCountry from "./query/country";
+import useNews from "./query/news";
+import useWeather from "./query/weather";
 
 function App() {
   const cacheExpiryTime = 5000;
@@ -39,74 +42,76 @@ function App() {
   // https://newsapi.org/ News API Key: 23cfe74ca26a47488e0457e15db36e6b
   // https://openweathermap.org/ Weather API Key: 14132a7935a6db2a69756f57d6f56bb9
 
-  type TCountry = {
-    cca2: string;
-    latlng: number[];
-    capital: string[];
-  };
+  const {
+    isRefetching: isRefetchingCountry,
+    refetch: refetchCountry,
+    data: dataCountry,
+    isSuccess: isSuccessCountry,
+  } = useCountry(searchText);
 
-  type TNews = { articles: { title: string }[]; totalResults: number };
+  const {
+    isRefetching: isRefetchingNews,
+    isLoading: isLoadingNews,
+    refetch: refetchNews,
+    data: dataNews,
+  } = useNews(dataCountry, isSuccessCountry, isRefetchingCountry);
 
-  type TWeather = {
-    main: {
-      feels_like: number;
-      grnd_level: number;
-      humidity: number;
-      pressure: number;
-      sea_level: number;
-      temp: number;
-      temp_max: number;
-      temp_min: number;
-    };
-  };
+  const {
+    isRefetching: isRefetchingWeather,
+    isLoading: isLoadingWeather,
+    refetch: refetchWeather,
+    data: dataWeather,
+  } = useWeather(dataCountry, isSuccessCountry, isRefetchingCountry);
+
+  console.log(isSuccessCountry);
 
   const onSubmit = async () => {
-    const country: TCountry = (
-      await fetch(
-        `https://restcountries.com/v3.1/name/${searchText}?fullText=true`
-      )
-        .then((res) => res.json())
-        .then((json) => {
-          setCountry(json[0]);
-          return json;
-        })
-        .catch((err) => console.log(err))
-    )[0];
+    await refetchCountry();
+    // await refetchNews();
+    // const country: TCountry = (
+    //   await fetch(
+    //     `https://restcountries.com/v3.1/name/${searchText}?fullText=true`
+    //   )
+    //     .then((res) => res.json())
+    //     .then((json) => {
+    //       setCountry(json[0]);
+    //       return json;
+    //     })
+    //     .catch((err) => console.log(err))
+    // )[0];
 
-    console.log(country.capital[0]);
+    // console.log(country.capital[0]);
     // console.log(country.capital[0]);
     // console.log(country, country.capital, country.capital.length);
     // console.log(country && country.capital && country.capital.length);
 
-    const news: TNews = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=${country.cca2.toLowerCase()}&apiKey=23cfe74ca26a47488e0457e15db36e6b`
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        setNews(json);
-        return json;
-      })
-      .catch((err) => console.log(err));
+    // const news: TNews = await fetch(
+    //   `https://newsapi.org/v2/top-headlines?country=${dataCountry[0].cca2.toLowerCase()}&apiKey=23cfe74ca26a47488e0457e15db36e6b`
+    // )
+    //   .then((res) => res.json())
+    //   .then((json) => {
+    //     setNews(json);
+    //     return json;
+    //   })
+    //   .catch((err) => console.log(err));
 
-    console.log(news);
+    // // console.log(news);
 
-    const weather: TWeather = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${country.latlng[0]}&lon=${country.latlng[1]}&appid=14132a7935a6db2a69756f57d6f56bb9`
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        setWeather(json);
-        return json;
-      })
-      .catch((err) => console.log(err));
+    // const weather: TWeather = await fetch(
+    //   `https://api.openweathermap.org/data/2.5/weather?lat=${country.latlng[0]}&lon=${country.latlng[1]}&appid=14132a7935a6db2a69756f57d6f56bb9`
+    // )
+    //   .then((res) => res.json())
+    //   .then((json) => {
+    //     setWeather(json);
+    //     return json;
+    //   })
+    //   .catch((err) => console.log(err));
 
-    console.log(weather);
+    // console.log(weather);
     // const [country, news] = await Promise.all([
     //   fetch(`https://restcountries.com/v3.1/name/${searchText}?fullText=true`),
     // ]);
   };
-
-  console.log(country, country);
 
   return (
     <div className="grid grid-cols-4">
@@ -121,25 +126,25 @@ function App() {
       .{/* {country && country.capital && country.capital.length > 0 && ( */}
       <Card>
         Capital:{" "}
-        {country && Array.isArray(country.capital) ? country.capital[0] : ""}
+        {/* {country && Array.isArray(country.capital) ? country.capital[0] : ""} */}
+        {isRefetchingCountry ?? "Loading..."}
+        {dataCountry && dataCountry[0].capital[0]}
       </Card>
       {/* )} */}
-      {news && (
-        <Card>
-          News:{" "}
-          {news?.articles.map(({ title }) => (
+      <Card>
+        News: {(isRefetchingNews || isLoadingNews) && "Loading..."}
+        {!(isRefetchingNews || isLoadingNews) &&
+          dataNews?.articles.map(({ title }) => <p>{title}</p>)}
+        {/* {news?.articles.map(({ title }) => (
             <p>{title}</p>
-          ))}
-        </Card>
-      )}
-      {weather && (
-        <Card>
-          Weather
-          <p>Maximum: {weather?.main.temp_max}</p>
-          <p>Minimum: {weather?.main.temp_min}</p>
-          <p>Feels like: {weather?.main.feels_like}</p>
-        </Card>
-      )}
+          ))} */}
+      </Card>
+      <Card>
+        Weather
+        <p>Maximum: {dataWeather?.main.temp_max}</p>
+        <p>Minimum: {dataWeather?.main.temp_min}</p>
+        <p>Feels like: {dataWeather?.main.feels_like}</p>
+      </Card>
     </div>
     // <div>
     //   <input
