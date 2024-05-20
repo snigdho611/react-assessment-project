@@ -32,6 +32,8 @@ function App() {
   //   // refetchOnWindowFocus: true, // Refetch on window focus (optional)
   // });
 
+  // 23cfe74ca26a47488e0457e15db36e6b
+
   const onSubmit = async () => {
     const [country, news] = await Promise.all([
       fetch(`https://restcountries.com/v3.1/name/${searchText}?fullText=true`),
