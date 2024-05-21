@@ -15,7 +15,7 @@ const useWeather = (
           dataCountry && dataCountry[0].latlng[0]
         }&lon=${
           dataCountry && dataCountry[0].latlng[1]
-        }&appid=14132a7935a6db2a69756f57d6f56bb9`
+        }&units=metric&appid=${import.meta.env.VITE_WEATHER_API_KEY}`
       )
         .then((res) => res.json())
         .catch((err) => console.log(err));

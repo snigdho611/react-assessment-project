@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 const useCountry = (searchText: string) =>
   useQuery({
     queryKey: ["countries"],
-    queryFn: async (): Promise<TCountry[] | void> => {
+    queryFn: async (): Promise<TCountry[]> => {
       return await fetch(
         `https://restcountries.com/v3.1/name/${searchText}?fullText=true`
       )

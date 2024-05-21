@@ -13,7 +13,7 @@ const useNews = (
       return await fetch(
         `https://newsapi.org/v2/top-headlines?country=${
           dataCountry && dataCountry[0].cca2.toLowerCase()
-        }&apiKey=23cfe74ca26a47488e0457e15db36e6b`
+        }&apiKey=${import.meta.env.VITE_NEWS_API_KEY}`
       )
         .then((res) => res.json())
         .catch((err) => console.log(err));
