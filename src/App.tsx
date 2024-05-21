@@ -15,29 +15,31 @@ function App() {
   // https://openweathermap.org/ Weather API Key: 14132a7935a6db2a69756f57d6f56bb9
 
   const {
-    isRefetching: isRefetchingCountry,
-    refetch: refetchCountry,
+    // isRefetching: isRefetchingCountry,
+    // refetch: refetchCountry,
     data: dataCountry,
-    isSuccess: isSuccessCountry,
+    trigger: dataTrigger,
+    // isSuccess: isSuccessCountry,
   } = useCountry(searchText);
 
-  const {
-    isRefetching: isRefetchingNews,
-    isLoading: isLoadingNews,
-    refetch: refetchNews,
-    data: dataNews,
-  } = useNews(dataCountry, isSuccessCountry, isRefetchingCountry);
+  // const {
+  //   isRefetching: isRefetchingNews,
+  //   isLoading: isLoadingNews,
+  //   refetch: refetchNews,
+  //   data: dataNews,
+  // } = useNews(dataCountry, isSuccessCountry, isRefetchingCountry);
 
-  const {
-    isRefetching: isRefetchingWeather,
-    isLoading: isLoadingWeather,
-    refetch: refetchWeather,
-    data: dataWeather,
-  } = useWeather(dataCountry, isSuccessCountry, isRefetchingCountry);
+  // const {
+  //   isRefetching: isRefetchingWeather,
+  //   isLoading: isLoadingWeather,
+  //   refetch: refetchWeather,
+  //   data: dataWeather,
+  // } = useWeather(dataCountry, isSuccessCountry, isRefetchingCountry);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await refetchCountry();
+    dataTrigger(searchText);
+    // await refetchCountry();
   };
 
   return (
@@ -77,17 +79,17 @@ function App() {
       </div>
       <div>
         <Card>
-          News: {(isRefetchingNews || isLoadingNews) && <Loader />}
+          {/* News: {(isRefetchingNews || isLoadingNews) && <Loader />}
           {!(isRefetchingNews || isLoadingNews) &&
-            dataNews?.articles.map(({ title }, i) => <p key={i}>{title}</p>)}
+            dataNews?.articles.map(({ title }, i) => <p key={i}>{title}</p>)} */}
         </Card>
       </div>
       <div>
         <Card>
           Weather
-          <p>Maximum: {dataWeather?.main.temp_max}</p>
+          {/* <p>Maximum: {dataWeather?.main.temp_max}</p>
           <p>Minimum: {dataWeather?.main.temp_min}</p>
-          <p>Feels like: {dataWeather?.main.feels_like}</p>
+          <p>Feels like: {dataWeather?.main.feels_like}</p> */}
         </Card>
       </div>
     </div>
