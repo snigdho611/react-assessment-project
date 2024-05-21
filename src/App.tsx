@@ -1,6 +1,6 @@
 import "./App.scss";
 import { Button } from "./components/ui/button";
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Input } from "./components/ui/input";
 import { Card } from "./components/ui/card";
 import useCountry from "./query/country";
@@ -35,43 +35,51 @@ function App() {
     data: dataWeather,
   } = useWeather(dataCountry, isSuccessCountry, isRefetchingCountry);
 
-  console.log(isSuccessCountry);
-
-  const onSubmit = async () => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     await refetchCountry();
   };
 
   return (
     <div className="grid grid-cols-4">
-      <div className="col-span-2">
+      <form className="col-span-4 flex" onSubmit={onSubmit}>
         <Input
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-          className="rounded-br-none rounded-tr-none"
+          className="rounded-br-none rounded-tr-none w-[75%]"
         />
-      </div>
-      <div className="col-span-2">
         <Button onClick={onSubmit} className="rounded-tl-none rounded-bl-none">
           Search
         </Button>
-      </div>
+      </form>
       <div className="h-[250px]">
-        <Card className="flex flex-col">
-          <span>
-            Capital: {isRefetchingCountry ?? <Loader />}
+        <Card
+          className="flex flex-col h-[213px] w-[320px] justify-center items-center"
+          style={{
+            backgroundImage: `url(${dataCountry && dataCountry[0].flags.png})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+          }}
+        >
+          <span
+            className="italic text-3xl font-bold text-blue-200"
+            style={{ textShadow: "3px 3px black" }}
+          >
+            {/* Capital: {isRefetchingCountry ?? <Loader />} */}
             {dataCountry && dataCountry[0].capital[0]}
           </span>
+          {/* 
           <span>
             Flag: {isRefetchingCountry ?? <Loader />}
             {dataCountry && dataCountry[0].flag}
-          </span>
+          </span> */}
         </Card>
       </div>
       <div>
         <Card>
           News: {(isRefetchingNews || isLoadingNews) && <Loader />}
           {!(isRefetchingNews || isLoadingNews) &&
-            dataNews?.articles.map(({ title }) => <p>{title}</p>)}
+            dataNews?.articles.map(({ title }, i) => <p key={i}>{title}</p>)}
         </Card>
       </div>
       <div>

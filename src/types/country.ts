@@ -3,4 +3,9 @@ export type TCountry = {
   latlng: number[];
   capital: string[];
   flag: string;
+  flags: {
+    alt: string;
+    png: string;
+    svg: string;
+  };
 };
