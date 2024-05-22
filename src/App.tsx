@@ -19,7 +19,7 @@ function App() {
     refetch: refetchCountry,
     data: dataCountry,
     isSuccess: isSuccessCountry,
-  } = useCountry(searchText);
+  } = useCountry(searchText.toLocaleLowerCase());
 
   const {
     isRefetching: isRefetchingNews,
@@ -41,8 +41,8 @@ function App() {
   };
 
   return (
-    <div className="grid grid-cols-4">
-      <form className="col-span-4 flex" onSubmit={onSubmit}>
+    <div className="grid grid-cols-3">
+      <form className="col-span-3 flex" onSubmit={onSubmit}>
         <Input
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -52,7 +52,7 @@ function App() {
           Search
         </Button>
       </form>
-      <div className="h-[250px]">
+      <div className=" flex justify-center">
         <Card
           className="flex flex-col h-[213px] w-[320px] justify-center items-center"
           style={{
@@ -66,7 +66,16 @@ function App() {
             style={{ textShadow: "3px 3px black" }}
           >
             {/* Capital: {isRefetchingCountry ?? <Loader />} */}
-            {dataCountry && dataCountry[0].capital[0]}
+            {dataCountry && dataCountry[0].name.common}
+            {/* {dataWeather?.name} */}
+          </span>
+          <span
+            className="italic text-sm font-bold text-blue-200"
+            style={{ textShadow: "2px 2px black" }}
+          >
+            {dataCountry &&
+              "Capital:" + dataCountry &&
+              dataCountry[0].capital[0]}
           </span>
           {/* 
           <span>
@@ -75,19 +84,31 @@ function App() {
           </span> */}
         </Card>
       </div>
+      <div className="col-span-2">
+        <Card>
+          <p>Maximum: {dataWeather?.main.temp_max}</p>
+          <p>Minimum: {dataWeather?.main.temp_min}</p>
+          <p>Feels like: {dataWeather?.main.feels_like}</p>
+          <p>
+            {dataWeather?.weather.map(({ id, main, description, icon }) => {
+              return (
+                <span>
+                  {main} {description}{" "}
+                  <img
+                    src={`http://openweathermap.org/img/w/${icon}.png`}
+                    alt=""
+                  />
+                </span>
+              );
+            })}
+          </p>
+        </Card>
+      </div>
       <div>
         <Card>
           News: {(isRefetchingNews || isLoadingNews) && <Loader />}
           {!(isRefetchingNews || isLoadingNews) &&
             dataNews?.articles.map(({ title }, i) => <p key={i}>{title}</p>)}
-        </Card>
-      </div>
-      <div>
-        <Card>
-          Weather
-          <p>Maximum: {dataWeather?.main.temp_max}</p>
-          <p>Minimum: {dataWeather?.main.temp_min}</p>
-          <p>Feels like: {dataWeather?.main.feels_like}</p>
         </Card>
       </div>
     </div>

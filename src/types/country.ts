@@ -8,4 +8,7 @@ export type TCountry = {
     png: string;
     svg: string;
   };
+  name: {
+    common: string;
+  };
 };
