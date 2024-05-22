@@ -10,5 +10,11 @@ export type TCountry = {
   };
   name: {
     common: string;
+    official: string;
   };
+};
+
+export type TCountryError = {
+  message: string;
+  status: number;
 };
