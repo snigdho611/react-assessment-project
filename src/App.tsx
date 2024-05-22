@@ -1,14 +1,14 @@
 import "./App.scss";
 import { Button } from "./components/ui/button";
-import { FormEvent, useEffect, useState } from "react";
-import { Input } from "./components/ui/input";
-import { Card } from "./components/ui/card";
-import useCountry from "./query/country";
-import useNews from "./query/news";
-import useWeather from "./query/weather";
-import Loader from "./components/Loader";
-import { TCountry } from "./types/country";
-import { queryClient } from "./main";
+import { FormEvent, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import useCountry from "@/query/features/country";
+import useNews from "@/query/features/news";
+import useWeather from "@/query/features/weather";
+import Loader from "@/components/Loader";
+import { TCountry } from "@/types/country";
+import { queryClient } from "@/query/client";
 
 function App() {
   const [searchText, setSearchText] = useState<string>("germanys");
@@ -21,21 +21,21 @@ function App() {
     isFetching: isFetchingCountry,
     refetch: refetchCountry,
     data: dataCountry,
-    isSuccess: isSuccessCountry,
-    isError: isErrorCountry,
+    // isSuccess: isSuccessCountry,
+    // isError: isErrorCountry,
   } = useCountry(searchText.toLocaleLowerCase());
 
   const {
     isFetching: isFetchingNews,
-    isLoading: isLoadingNews,
-    refetch: refetchNews,
+    // isLoading: isLoadingNews,
+    // refetch: refetchNews,
     data: dataNews,
   } = useNews(dataCountry as TCountry[]);
 
   const {
-    isRefetching: isRefetchingWeather,
-    isLoading: isLoadingWeather,
-    refetch: refetchWeather,
+    // isRefetching: isRefetchingWeather,
+    // isLoading: isLoadingWeather,
+    // refetch: refetchWeather,
 
     data: dataWeather,
   } = useWeather(dataCountry as TCountry[]);
@@ -47,8 +47,6 @@ function App() {
     }
     await refetchCountry();
   };
-
-  console.log(isSuccessCountry);
 
   return (
     <div className="grid grid-cols-3 w-3/4 mx-auto">
