@@ -4,7 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 
 const useNews = (dataCountry: void | TCountry[] | undefined) =>
   useQuery({
-    queryKey: ["news", {country: dataCountry && dataCountry[0].cca2}],
+    queryKey: [
+      "news",
+      { country: dataCountry && dataCountry.length > 0 && dataCountry[0].cca2 },
+    ],
     queryFn: async (): Promise<TNews | void> => {
       return await fetch(
         `${import.meta.env.VITE_NEWS_SERVER}/top-headlines?country=${
@@ -16,6 +19,7 @@ const useNews = (dataCountry: void | TCountry[] | undefined) =>
     },
     enabled: !!(dataCountry && dataCountry.length > 0 && dataCountry[0].cca2),
     refetchOnWindowFocus: false,
+    staleTime: import.meta.env.VITE_STALE_TIME,
     // staleTime: 5000,
   });
 

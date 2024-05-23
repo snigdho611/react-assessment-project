@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const useCountry = (searchText: string) =>
   useQuery({
-    queryKey: ["countries"],
+    queryKey: ["countries", { country: searchText }],
     queryFn: async (): Promise<TCountry[] | TCountryError> => {
       return await fetch(
         `${
@@ -13,8 +13,9 @@ const useCountry = (searchText: string) =>
         .then((res) => res.json())
         .catch((err) => console.log(err));
     },
-    enabled: false,
+    enabled: !!searchText,
     refetchOnWindowFocus: false,
+    staleTime: import.meta.env.VITE_STALE_TIME,
   });
 
 export default useCountry;

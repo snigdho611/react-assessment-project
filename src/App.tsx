@@ -10,22 +10,26 @@ import Loader from "@/components/Loader";
 import { TCountry, TCountryError } from "@/types/country";
 import { queryClient } from "@/query/client";
 import { TWeather } from "./types/weather";
+import { TNews } from "./types/news";
 
 function App() {
-  const [searchText, setSearchText] = useState<string>("germanys");
+  const [searchText, setSearchText] = useState<string>("");
+  const [searchTextSubmit, setSearchTextSubmit] = useState<string>(searchText);
 
+  const queryCache = queryClient.getQueryCache();
+  console.log(queryCache.findAll({ queryKey: ["countries"] }));
   // https://newsapi.org/ News API Key: 23cfe74ca26a47488e0457e15db36e6b
   // https://openweathermap.org/ Weather API Key: 14132a7935a6db2a69756f57d6f56bb9
 
   const {
     // isRefetching: isRefetchingCountry,
     isFetching: isFetchingCountry,
-    refetch: refetchCountry,
+    // refetch: refetchCountry,
     data: dataCountry,
     isError: isErrorCountry,
     // isSuccess: isSuccessCountry,
     // isError: isErrorCountry,
-  } = useCountry(searchText.toLocaleLowerCase());
+  } = useCountry(searchTextSubmit.toLocaleLowerCase());
 
   const {
     isFetching: isFetchingNews,
@@ -44,10 +48,11 @@ function App() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (isFetchingCountry) {
-      queryClient.cancelQueries({ queryKey: ["countries"] });
-    }
-    await refetchCountry();
+    setSearchTextSubmit(searchText);
+    // if (isFetchingCountry) {
+    //   queryClient.cancelQueries({ queryKey: ["countries"] });
+    // }
+    // await refetchCountry();
   };
 
   return (
@@ -107,7 +112,9 @@ function App() {
                 : "none",
           }}
         >
-          {isErrorCountry && !isFetchingCountry && "Unable to fetch data at this time"}
+          {isErrorCountry &&
+            !isFetchingCountry &&
+            "Unable to fetch data at this time"}
           {!isFetchingCountry &&
             dataCountry &&
             (dataCountry as TCountryError).status === 404 &&
@@ -132,7 +139,9 @@ function App() {
             "grid-cols-3"
           } py-3 px-8 h-full justify-center items-center`}
         >
-          {isErrorCountry && !isFetchingCountry && "Unable to fetch data at this time"}
+          {isErrorCountry &&
+            !isFetchingCountry &&
+            "Unable to fetch data at this time"}
           {isFetchingCountry || isFetchingWeather ? <Loader /> : null}
           {(dataWeather as TWeather) &&
             !(isFetchingCountry || isFetchingWeather) &&
@@ -181,9 +190,12 @@ function App() {
           {isFetchingCountry || isFetchingNews ? <Loader /> : null}
           {!isFetchingNews && !isFetchingCountry && !isErrorCountry && (
             <ol className="list-decimal list-inside">
-              {dataNews?.articles.map(({ title }, i) => (
-                <li key={i}>{title}</li>
-              ))}
+              {(dataNews as TNews) &&
+                (dataNews as TNews).articles &&
+                (dataNews as TNews).articles.length > 0 &&
+                (dataNews as TNews)?.articles.map(({ title }, i) => (
+                  <li key={i}>{title}</li>
+                ))}
             </ol>
           )}
         </Card>
