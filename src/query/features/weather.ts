@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const useWeather = (dataCountry: void | TCountry[] | undefined) =>
   useQuery({
-    queryKey: ["weather", { dataCountry }],
+    queryKey: ["weather", dataCountry && dataCountry.length > 0 && dataCountry[0].latlng],
     queryFn: async (): Promise<TWeather | void> => {
       return await fetch(
         `${import.meta.env.VITE_WEATHER_SERVER}/weather?lat=${

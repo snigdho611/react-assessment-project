@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const useNews = (dataCountry: void | TCountry[] | undefined) =>
   useQuery({
-    queryKey: ["news", { dataCountry }],
+    queryKey: ["news", {country: dataCountry && dataCountry[0].cca2}],
     queryFn: async (): Promise<TNews | void> => {
       return await fetch(
         `${import.meta.env.VITE_NEWS_SERVER}/top-headlines?country=${
