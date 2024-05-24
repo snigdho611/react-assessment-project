@@ -16,16 +16,12 @@ export const queryClient = new QueryClient({
 export const createIDBPersister = (idbValidKey: IDBValidKey = "reactQuery") => {
   return {
     persistClient: async (client: PersistedClient) => {
-      // console.log(idbValidKey, client);
-      console.log("Client wa persisted", idbValidKey, client);
       await set(idbValidKey, client);
     },
     restoreClient: async () => {
-      console.log("Client was restored", idbValidKey);
       return await get<PersistedClient>(idbValidKey);
     },
     removeClient: async () => {
-      console.log("Client was removed", idbValidKey);
       await del(idbValidKey);
     },
   } as Persister;
