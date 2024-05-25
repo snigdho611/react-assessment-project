@@ -19,7 +19,7 @@ const Searchbar: React.FC<ISearchbarProps> = ({
         placeholder="Enter a country's name"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-br-none rounded-tr-none w-[75%] bg-slate-200 hover:bg-slate-300 focus:bg-slate-300 transition-colors"
+        className="rounded-br-none rounded-tr-none w-[75%] bg-blue-200 hover:bg-blue-300 focus:bg-blue-300 transition-colors"
       />
       <Button
         onClick={onSubmit}
