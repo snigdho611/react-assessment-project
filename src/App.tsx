@@ -1,30 +1,27 @@
 import "./App.scss";
-import { Button } from "./components/ui/button";
 import { FormEvent, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import useCountry from "@/query/features/country";
 import useNews from "@/query/features/news";
 import useWeather from "@/query/features/weather";
 import Loader from "@/components/Loader";
 import { TCountry, TCountryError } from "@/types/country";
-import { queryClient } from "@/query/client";
 import { TWeather } from "./types/weather";
 import { TNews } from "./types/news";
 import {
-  Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
 } from "./components/ui/carousel";
+import Searchbar from "./components/SearchBar";
+import CountryCard from "./components/CountryCard";
+import WeatherCard from "./components/WeatherCard";
+import NewsCarousel from "./components/NewsCarousel";
 
 function App() {
   const [searchText, setSearchText] = useState<string>("");
   const [searchTextSubmit, setSearchTextSubmit] = useState<string>(searchText);
-
-  const queryCache = queryClient.getQueryCache();
-  console.log(queryCache.findAll({ queryKey: ["countries"] }));
 
   const {
     isFetching: isFetchingCountry,
@@ -48,19 +45,11 @@ function App() {
 
   return (
     <div className="grid grid-cols-3 w-5/6 mx-auto gap-x-8 gap-y-4 mt-5">
-      <form className="col-span-3 flex" onSubmit={onSubmit}>
-        <Input
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          className="rounded-br-none rounded-tr-none w-[75%] bg-slate-200 hover:bg-slate-300 focus:bg-slate-300 transition-colors"
-        />
-        <Button
-          onClick={onSubmit}
-          className="rounded-tl-none rounded-bl-none w-[25%]"
-        >
-          Search
-        </Button>
-      </form>
+      <Searchbar
+        value={searchText}
+        onChange={setSearchText}
+        onSubmit={onSubmit}
+      />
       <Card className="col-span-3 flex flex-col md:flex-row items-center w-full gap-3 min-h-[3rem]">
         {isErrorCountry && !isFetchingCountry && (
           <span className="self-center text-center w-full">
@@ -89,7 +78,7 @@ function App() {
             `Capital: ${(dataCountry as TCountry[])[0].capital[0]}`}
         </span>
       </Card>
-      <div className="flex justify-center col-span-3 md:col-span-1 h-[213px]">
+      <CountryCard>
         <Card
           className="flex flex-col h-full w-full justify-center items-center bg-no-repeat bg-center"
           style={{
@@ -103,6 +92,9 @@ function App() {
                 : "none",
           }}
         >
+          {searchTextSubmit === "" && (
+            <img src="/empty.jpg" alt="" className="h-[10rem]" />
+          )}
           {isErrorCountry &&
             !isFetchingCountry &&
             "Unable to fetch data at this time"}
@@ -112,101 +104,111 @@ function App() {
             "Country not found!"}
           {isFetchingCountry && <Loader />}
         </Card>
-      </div>
-      <div className="col-span-3 md:col-span-2 h-[213px]">
-        <Card
-          className={`grid ${
-            !(isFetchingCountry || isFetchingWeather || isErrorCountry) &&
-            "grid-cols-3"
-          } py-3 px-8 h-full justify-center items-center`}
-        >
-          {isErrorCountry &&
-            !isFetchingCountry &&
-            "Unable to fetch data at this time"}
-          {isFetchingCountry || isFetchingWeather ? <Loader /> : null}
-          {(dataWeather as TWeather) &&
-            !(isFetchingCountry || isFetchingWeather) &&
-            !isErrorCountry && (
-              <>
-                <span className="text-3xl font-bold text-center text-slate-500">
-                  {dataWeather?.main.temp}&deg;C
-                </span>
+      </CountryCard>
+      <WeatherCard
+        isFetchingAll={isFetchingCountry || isFetchingWeather || isErrorCountry}
+      >
+        {searchTextSubmit === "" && (
+          <img
+            src="/empty.jpg"
+            alt=""
+            className="h-[10rem] mx-auto col-span-3"
+          />
+        )}
+        {isErrorCountry &&
+          !isFetchingCountry &&
+          "Unable to fetch data at this time"}
+        {isFetchingCountry || isFetchingWeather ? <Loader /> : null}
+        {(dataWeather as TWeather) &&
+          !(isFetchingCountry || isFetchingWeather) &&
+          !isErrorCountry && (
+            <>
+              <span className="text-3xl font-bold text-center text-slate-500">
+                {dataWeather?.main.temp}&deg;C
+              </span>
+              <img
+                src={`http://openweathermap.org/img/w/${dataWeather?.weather[0].icon}.png`}
+                alt=""
+                className="w-20 justify-self-center self-center"
+              />
+              <span className="grid grid-cols-2 gap-x-2 gap-y-2">
+                <span className="text-end text-sm text-slate-500">
+                  Humidity
+                </span>{" "}
                 <img
-                  src={`http://openweathermap.org/img/w/${dataWeather?.weather[0].icon}.png`}
-                  alt=""
-                  className="w-20 justify-self-center self-center"
+                  src="/humidity.png"
+                  className="h-12 justify-self-start row-span-2"
                 />
-                <span className="grid grid-cols-2 gap-x-2 gap-y-2">
-                  <span className="text-end text-sm text-slate-500">
-                    Humidity
-                  </span>{" "}
-                  <img
-                    src="/humidity.png"
-                    className="h-12 justify-self-start row-span-2"
-                  />
-                  <span className="text-2xl font-bold self-center justify-self-end text-slate-500">
-                    {dataWeather?.main.humidity}%
-                  </span>{" "}
+                <span className="text-2xl font-bold self-center justify-self-end text-slate-500">
+                  {dataWeather?.main.humidity}%
+                </span>{" "}
+              </span>
+              <span className="flex flex-col text-center text-slate-500">
+                <span>Max: {dataWeather?.main.temp_max}&deg;C</span>
+                <span>Min: {dataWeather?.main.temp_min}&deg;C</span>
+                <span>Feels like: {dataWeather?.main.feels_like}</span>
+              </span>
+              <span className="flex flex-col col-span-2 text-center text-slate-500">
+                <span className="text-2xl">
+                  {dataWeather?.weather[0].main}{" "}
                 </span>
-                <span className="flex flex-col text-center text-slate-500">
-                  <span>Max: {dataWeather?.main.temp_max}&deg;C</span>
-                  <span>Min: {dataWeather?.main.temp_min}&deg;C</span>
-                  <span>Feels like: {dataWeather?.main.feels_like}</span>
-                </span>
-                <span className="flex flex-col col-span-2 text-center text-slate-500">
-                  <span className="text-2xl">
-                    {dataWeather?.weather[0].main}{" "}
-                  </span>
-                  <span>{dataWeather?.weather[0].description} </span>
-                </span>
-              </>
-            )}
-        </Card>
-      </div>
-      <Card className="col-span-3">
-        <Carousel className="h-80 flex items-center">
-          {isErrorCountry && !isFetchingCountry && (
-            <span className="self-center text-center">
-              Unable to fetch data at this time
-            </span>
+                <span>{dataWeather?.weather[0].description} </span>
+              </span>
+            </>
           )}
-          {isFetchingCountry || isFetchingNews ? <Loader /> : null}
-          <CarouselContent>
-            {!isFetchingNews &&
-              !isFetchingCountry &&
-              !isErrorCountry &&
-              (dataNews as TNews) &&
-              (dataNews as TNews).articles &&
-              (dataNews as TNews).articles.length > 0 &&
-              (dataNews as TNews)?.articles.map(
-                ({ title, urlToImage, url }, i) => (
-                  <CarouselItem
-                    key={i}
-                    className="pl-4 md:basis-1/2 lg:basis-1/3"
-                  >
-                    <a href={url}>
-                      <Card>
-                        <CardContent className="flex aspect-square items-center justify-center p-0">
-                          <span className="text-xl font-semibold">
-                            <img
-                              src={urlToImage ? urlToImage : "/640x360.png"}
-                              alt=""
-                            />
-                            {title.length > 40
-                              ? `${title.slice(0, 32)}...`
-                              : title}
+      </WeatherCard>
+      <NewsCarousel>
+        {searchTextSubmit === "" && (
+          <img src="/empty.jpg" alt="" className="h-[10rem] mx-auto" />
+        )}
+        {isErrorCountry && !isFetchingCountry && (
+          <span className="self-center text-center mx-auto">
+            Unable to fetch data at this time
+          </span>
+        )}
+        {isFetchingCountry || isFetchingNews ? <Loader /> : null}
+        <CarouselContent>
+          {!isFetchingNews &&
+            !isFetchingCountry &&
+            !isErrorCountry &&
+            (dataNews as TNews) &&
+            (dataNews as TNews).articles &&
+            (dataNews as TNews).articles.length > 0 &&
+            (dataNews as TNews)?.articles.map(
+              ({ title, description, urlToImage, url }, i) => (
+                <CarouselItem
+                  key={i}
+                  className="pl-4 md:basis-1/2 lg:basis-1/3"
+                >
+                  <a href={url}>
+                    <Card className="">
+                      <CardContent className="flex aspect-square justify-center p-0">
+                        <span className="text-xl font-semibold text-ellipsis whitespace-nowrap overflow-hidden flex flex-col">
+                          <img
+                            className="h-52"
+                            src={urlToImage ? urlToImage : "/640x360.png"}
+                            alt=""
+                          />
+                          <span className="whitespace-nowrap overflow-hidden">
+                            {title}
                           </span>
-                        </CardContent>
-                      </Card>
-                    </a>
-                  </CarouselItem>
-                )
-              )}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </Card>
+                          <span className="text-xs text-wrap">
+                            {description}
+                          </span>
+                          {/* {title.length > 40
+                              ? `${title.slice(0, 32)}...`
+                              : title} */}
+                        </span>
+                      </CardContent>
+                    </Card>
+                  </a>
+                </CarouselItem>
+              )
+            )}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </NewsCarousel>
     </div>
   );
 }

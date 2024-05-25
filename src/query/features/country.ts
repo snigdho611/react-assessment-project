@@ -15,6 +15,8 @@ const useCountry = (searchText: string) =>
     },
     enabled: !!searchText,
     refetchOnWindowFocus: false,
+    retry: true,
+    retryDelay: 5000,
     staleTime: import.meta.env.VITE_STALE_TIME,
   });
 
