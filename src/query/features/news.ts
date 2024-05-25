@@ -2,7 +2,7 @@ import { TCountry } from "@/types/country";
 import { TNews } from "@/types/news";
 import { useQuery } from "@tanstack/react-query";
 
-const useNews = (dataCountry: void | TCountry[] | undefined) =>
+const useNews = (dataCountry: TCountry[]) =>
   useQuery({
     queryKey: [
       "news",
