@@ -185,11 +185,11 @@ const Home = () => {
                     className="pl-4 md:basis-1/2 lg:basis-1/3"
                   >
                     <a href={url}>
-                      <Card className="">
+                      <Card className="max-h-[20rem]">
                         <CardContent className="flex aspect-square justify-center p-0">
                           <span className="text-xl font-semibold text-ellipsis whitespace-nowrap overflow-hidden flex flex-col">
                             <img
-                              className="h-52"
+                              className="max-h-52"
                               src={urlToImage ? urlToImage : "/640x360.png"}
                               alt=""
                             />
