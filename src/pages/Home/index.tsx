@@ -59,7 +59,7 @@ const Home = () => {
             </span>
           )}
           <span
-            className="italic text-3xl font-bold text-blue-200 md:w-2/3 w-full"
+            className="italic text-3xl font-bold text-blue-200 md:w-2/3 w-full text-center"
             style={{ textShadow: "2px 2px black" }}
           >
             {!isFetchingCountry &&
@@ -69,7 +69,7 @@ const Home = () => {
               (dataCountry as TCountry[])[0].name.official}
           </span>
           <span
-            className="italic font-semibold text-blue-200 text-2xl md:w-1/3 w-full"
+            className="italic font-semibold text-blue-200 text-2xl md:w-1/3 w-full text-center"
             style={{ textShadow: "1px 1px black" }}
           >
             {!isFetchingCountry &&
